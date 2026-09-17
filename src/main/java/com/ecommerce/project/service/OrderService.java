@@ -1,9 +1,7 @@
 package com.ecommerce.project.service;
 
 import com.ecommerce.project.payload.OrderDTO;
-import com.ecommerce.project.payload.OrderRequestDTO;
 import com.ecommerce.project.payload.OrderResponse;
-import com.ecommerce.project.payload.OrderStatusUpdateDTO;
 import jakarta.transaction.Transactional;
 
 public interface OrderService {
