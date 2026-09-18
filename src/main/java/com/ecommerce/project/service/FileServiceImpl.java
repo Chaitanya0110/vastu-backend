@@ -1,30 +1,30 @@
 package com.ecommerce.project.service;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
+
+    @Autowired
+    private Cloudinary cloudinary;
 
     @Override
     public String uploadImage(String path, MultipartFile file) throws IOException {
-        String originalFilename = file.getOriginalFilename();
+        // Upload the file to Cloudinary
+        Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
+                "folder", "vastu_products",
+                "public_id", UUID.randomUUID().toString()
+        ));
 
-        String randomId = UUID.randomUUID().toString();
-        String fileName = randomId.concat(originalFilename.substring(originalFilename.lastIndexOf('.')));
-        String filePath = path + File.separator + fileName;
-
-        File folder = new File(path);
-        if (!folder.exists()) folder.mkdirs();
-
-        Files.copy(file.getInputStream(), Paths.get(filePath));
-
-        return fileName;
+        // Return the secure cloud URL instead of a local file name
+        return uploadResult.get("secure_url").toString();
     }
 }

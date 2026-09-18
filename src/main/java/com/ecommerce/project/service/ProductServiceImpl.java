@@ -132,6 +132,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private String constructImageUrl(String imageName){
+        // If the image is already a full Cloudinary (or web) URL, return it as-is
+        if (imageName != null && (imageName.startsWith("http://") || imageName.startsWith("https://"))) {
+            return imageName;
+        }
+
+        // Otherwise, it's an old local image, so attach the local base URL
         return imageBaseUrl.endsWith("/") ? imageBaseUrl + imageName : imageBaseUrl + "/" + imageName;
     }
 

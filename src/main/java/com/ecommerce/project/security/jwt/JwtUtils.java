@@ -64,7 +64,7 @@ public class JwtUtils{
     public ResponseCookie cleanJwtCookie(){
         ResponseCookie cookie = ResponseCookie.from(jwtCookie, null)
                 .path("/api")
-                .maxAge(0)           
+                .maxAge(0)
                 .httpOnly(true)
                 .secure(true)
                 .sameSite("None")
