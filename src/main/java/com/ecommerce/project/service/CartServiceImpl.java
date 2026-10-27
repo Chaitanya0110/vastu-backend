@@ -55,7 +55,7 @@ public class CartServiceImpl implements CartService {
         }
 
         if(product.getQuantity() < quantity) {
-            throw new APIException("Please, make an order of the "+product.getProductName()+" less than or equal to "+quantity+".");
+            throw new APIException("Please, make an order of the "+product.getProductName()+" less than or equal to "+product.getQuantity()+".");
         }
 
         CartItem newCartItem = new CartItem();
@@ -133,14 +133,6 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product","productId",productId));
 
-        if(product.getQuantity() == 0) {
-            throw new APIException(product.getProductName()+" is not available");
-        }
-
-        if(product.getQuantity() < quantity) {
-            throw new APIException("Please, make an order of the "+product.getProductName()+" less than or equal to "+quantity+".");
-        }
-
         CartItem cartItem = cartItemRepository.findCartItemByProductIdAndCartId(cartId, productId);
         if(cartItem == null) {
             throw new APIException("Product "+ product.getProductName()+" not avilable in the cart");
@@ -154,7 +146,7 @@ public class CartServiceImpl implements CartService {
 
         if(newQuantity == 0){
             deleteProductFromCart(cartId, productId);
-            cart = cartRepository.findById(cartId).get();
+            cart.getCartItems().remove(cartItem);
         } else{
             if (product.getQuantity() < newQuantity) {
                 throw new APIException("Please, make an order of the " + product.getProductName() + " less than or equal to " + product.getQuantity() + ".");
@@ -167,11 +159,6 @@ public class CartServiceImpl implements CartService {
 
             cartItemRepository.save(cartItem);
             cartRepository.save(cart);
-        }
-
-        CartItem updatedCartItem = cartItemRepository.save(cartItem);
-        if(updatedCartItem.getQuantity() == 0){
-            cartItemRepository.deleteById(updatedCartItem.getCartItemId());
         }
 
         CartDTO cartDTO = mapper.map(cart, CartDTO.class);
